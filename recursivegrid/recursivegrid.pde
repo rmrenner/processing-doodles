@@ -1,36 +1,50 @@
-/*color white = color(255,255,255);
-color deep_blue = color(16,16,122);
-color blue = color(50,50,200);
-color lt_blue = color(50,50,255);
-color light_yellow = color(236,231,173);
-color grey = color(30,30,30);*/
-ArrayList<Line> lines = new ArrayList<Line>();
-ArrayList<Line> cells = new ArrayList<Line>();
-PFont motter_air_bold;
-
 /*
+
+Recursively subdivides a space into little randomly-colored rectangles.
+
+Here's what the variables do:
+
+  Variables that control subdivisions:
+
+    min_cell_size: stop subdividing if the width or height of a cell is <= min_cell_size.
+
+    cell_margin: any cell subdivisions will be at least cell_margin pixels away from the wall.
+
+    line_size: if we draw the subdividing lines, they will be line_size in width.
+
   Right now my favorite values for the cell settings are:
     min_cell_size = 45;
     cell_margin = 20;
     line_size = 10;
+
+  Color settings:
+
+    This sketch uses HSB (Hue, Saturation, Brightness) color mode.
+
+    The results of this sketch are often more aesthetically pleasing if the colors selected are fixed in respect to one or two components of an HSB color.
+
+    The global h, s, b float values are there to be the reference value from which the randomized colors vary.
 */
 
 float min_cell_size = random(45,200);
 float cell_margin = random(20, (min_cell_size-2)/2);
 float line_size = random(5,30);
+
 float h;    //the dominant hue for the scene.
 float s;
 float b;
 color bg_color;    //empty cells
 color line_color; //borders between cells
 color cell_color; //filled-in cells
-color banner_color; //text color on the banner
-color banner_bg;  //color of the enclosing square
+
 boolean show_lines = random(1.0)>= .5;
 boolean show_cells = !show_lines || random(1.0)>= .5;
 boolean div_both_x = random(1.0)>= .5;
 boolean div_both_y = random(1.0)>= .5;
 boolean saved;
+
+ArrayList<Line> lines = new ArrayList<Line>();
+ArrayList<Line> cells = new ArrayList<Line>();
 
 class Line
 {
@@ -55,7 +69,6 @@ class Line
 void setup()
 {
   size(2000,2000);
-  motter_air_bold = createFont("MotterAir-Bold",100,true);
   setup_colors();
   setup_lines(0,width,0,height);
 
@@ -67,8 +80,7 @@ void setup_colors()
   s = random(10,100);
   b = random(10,100);
   colorMode(HSB, 360,100,100);
-  bg_color = banner_bg = randomB();
-  line_color = banner_color = color(0,0,0);
+  line_color = color(0,0,0);
   //cell_color = color(h,random(100),random(100));
 
 }
@@ -117,7 +129,6 @@ void draw()
   {  draw_cells(); }
   if(show_lines)
   {draw_lines();}
-  //draw_banner();
   if(!saved)
   {
     saved = true;
@@ -125,26 +136,9 @@ void draw()
   }
 }
 
-void draw_banner()
-{
-  noStroke();
-  rectMode(CORNER);
-
-  fill(banner_bg);
-  rect(0,60,1064,129);
-  fill(banner_color);
-  textFont(motter_air_bold);
-  rect(0,60,1920,15);
-  text("hypercorrect",160,148);
-  rect(0,174,1920,15);
-  rect(1064,60,15,129);
-  rect(859,75,16,11);
-
-}
-
 void draw_lines()
 {
-  //strokeCap(SQUARE);
+  strokeCap(PROJECT);
   strokeWeight(line_size);
   for (Line l: lines)
   {
@@ -166,7 +160,7 @@ void draw_cells()
 }
 
 /* Randomly subdivides the specified space.
-  Refuses to subdivide spaces <= 100px */
+  Refuses to subdivide spaces <= min_cell_size */
 void setup_lines(float x0, float x1, float y0, float y1)
 {
   float dx = abs(x1-x0); //calculate horiz size of area
@@ -193,7 +187,7 @@ void setup_lines(float x0, float x1, float y0, float y1)
       {
           setup_lines(x0, pivot, y0, y1);
           setup_lines(pivot, x1, y0, y1);
-      
+
       }
       else
       {
