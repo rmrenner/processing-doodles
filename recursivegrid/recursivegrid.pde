@@ -175,11 +175,6 @@ void draw()
   {  draw_cells(); }
   if(show_lines)
   {draw_lines();}
-  if(!saved)
-  {
-    saved = true;
-    saveFrame(""+year()+month()+day()+hour()+minute()+second()+".png");
-  }
 }
 
 void draw_lines()
@@ -272,4 +267,16 @@ void setup_lines(float x0, float x1, float y0, float y1)
     }
 
   }
+}
+
+void keyReleased() {
+  if (key == 's' || key == 'S') saveFrame(timestamp()+"_##.png");
+  if (key == 'c' || key == 'C') show_cells = !show_cells;
+  if (key == 'l' || key == 'L') show_lines = !show_lines;
+
+
+}
+
+String timestamp() {
+  return String.format("%1$ty%1$tm%1$td_%1$tH%1$tM%1$tS", java.util.Calendar.getInstance());
 }
