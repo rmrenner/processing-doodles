@@ -12,6 +12,8 @@ Here's what the variables do:
 
     line_size: if we draw the subdividing lines, they will be line_size in width.
 
+    div_both_x/div_both_y: when subdividing an area, controls whether both sides of the divided area are recursively subdivided next. If false, only the larger sub-area gets divided up further.
+
   Right now my favorite values for the cell settings are:
     min_cell_size = 45;
     cell_margin = 20;
@@ -28,6 +30,8 @@ Here's what the variables do:
 
 float min_cell_size = random(45,200);
 float cell_margin = random(20, (min_cell_size-2)/2);
+boolean div_both_x = random(1.0)>= .5;
+boolean div_both_y = random(1.0)>= .5;
 float line_size = random(5,30);
 
 float h;    //the dominant hue for the scene.
@@ -39,9 +43,6 @@ int cell_color_mode; //filled-in cells
 
 boolean show_lines = random(1.0)>= .5;
 boolean show_cells = !show_lines || random(1.0)>= .5;
-boolean div_both_x = random(1.0)>= .5;
-boolean div_both_y = random(1.0)>= .5;
-boolean saved;
 
 ArrayList<Line> lines = new ArrayList<Line>();
 ArrayList<Line> cells = new ArrayList<Line>();
