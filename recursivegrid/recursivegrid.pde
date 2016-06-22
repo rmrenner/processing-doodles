@@ -34,8 +34,8 @@ float h;    //the dominant hue for the scene.
 float s;
 float b;
 color bg_color;    //empty cells
-color line_color; //borders between cells
-color cell_color; //filled-in cells
+int line_color_mode; //borders between cells
+int cell_color_mode; //filled-in cells
 
 boolean show_lines = random(1.0)>= .5;
 boolean show_cells = !show_lines || random(1.0)>= .5;
@@ -68,7 +68,7 @@ class Line
 
 void setup()
 {
-  size(2000,2000);
+  size(1200,900);
   setup_colors();
   setup_lines(0,width,0,height);
 
@@ -80,9 +80,55 @@ void setup_colors()
   s = random(10,100);
   b = random(10,100);
   colorMode(HSB, 360,100,100);
-  line_color = color(0,0,0);
-  //cell_color = color(h,random(100),random(100));
+  line_color_mode = int(random(7));
+  cell_color_mode = int(random(7));
 
+}
+
+color lineColor()
+{
+  switch(line_color_mode)
+  {
+    case 0:
+      return anyColor();
+    case 1:
+      return fixedH();
+    case 2:
+      return fixedS();
+    case 3:
+      return fixedB();
+    case 4:
+      return randomH();
+    case 5:
+      return randomS();
+    case 6:
+      return randomB();
+    default:
+      return color(0,0,0);
+  }
+}
+
+color cellColor()
+{
+  switch(cell_color_mode)
+  {
+    case 0:
+      return anyColor();
+    case 1:
+      return fixedH();
+    case 2:
+      return fixedS();
+    case 3:
+      return fixedB();
+    case 4:
+      return randomH();
+    case 5:
+      return randomS();
+    case 6:
+      return randomB();
+    default:
+      return color(0,0,0);
+  }
 }
 
 color anyColor()
@@ -152,7 +198,6 @@ void draw_cells()
 {
   rectMode(CORNERS);
   noStroke();
-  fill(cell_color);
   for (Line c: cells)
   { fill(c.myColor);
     rect(c.start.x, c.start.y, c.end.x, c.end.y);
@@ -169,7 +214,7 @@ void setup_lines(float x0, float x1, float y0, float y1)
   //if either dimension is less than min cell size, stop recursing
   if(dx <= min_cell_size || dy <= min_cell_size)
   {
-    cells.add(new Line(new PVector(x0,y0),new PVector(x1,y1),fixedS()));
+    cells.add(new Line(new PVector(x0,y0),new PVector(x1,y1),cellColor()));
     return;
   }
 
@@ -179,7 +224,7 @@ void setup_lines(float x0, float x1, float y0, float y1)
   {
     //Width > Height or Square. Make vertical line.
       pivot = random(x0+cell_margin, x1-cell_margin);
-      l = new Line(new PVector(pivot, y0), new PVector(pivot, y1),fixedS());
+      l = new Line(new PVector(pivot, y0), new PVector(pivot, y1),lineColor());
       lines.add(l);
 
       //This line creates two new regions to consider:
@@ -206,7 +251,7 @@ void setup_lines(float x0, float x1, float y0, float y1)
   {
     //Height > Width. Make horizontal line.
     pivot = random(y0+cell_margin, y1-cell_margin);
-    l = new Line(new PVector(x0, pivot), new PVector(x1, pivot),fixedS());
+    l = new Line(new PVector(x0, pivot), new PVector(x1, pivot),lineColor());
     lines.add(l);
     if(div_both_y)
     {
