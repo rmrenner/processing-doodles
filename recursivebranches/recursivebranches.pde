@@ -29,14 +29,11 @@
  The global h, s, b float values are there to be the reference value from which the randomized colors vary.
  */
 
-float min_cell_size = random(45, 200);
-float cell_margin = random(20, (min_cell_size-2)/2);
-boolean div_both_x = random(1.0)>= .5;
-boolean div_both_y = random(1.0)>= .5;
-boolean cell_both_x = random(1.0)>= .5;
-boolean cell_both_y = random(1.0)>= .5;
-
-float line_size = random(5, 30);
+float min_cell_size;
+float cell_margin;
+boolean div_both_x;
+boolean div_both_y;
+float line_size;
 
 float h;    //the dominant hue for the scene.
 float s;
@@ -44,7 +41,7 @@ float b;
 color bg_color;    //empty cells
 int line_color_mode; //borders between cells
 
-ArrayList<Line> lines = new ArrayList<Line>();
+ArrayList<Line> lines;
 
 class Line
 {
@@ -62,15 +59,26 @@ class Line
   {
     this.start = start;
     this.end = end;
-    this.myColor = color(255, 255, 255);
+    this.myColor = color(0, 100, 100);
   }
 }
 
 void setup()
 {
   fullScreen();
-  setup_colors();
+  setup_parameters();
+  lines = new ArrayList<Line>();
   setup_lines(0, width, 0, height);
+  setup_colors();
+}
+
+void setup_parameters()
+{
+  min_cell_size = random(45, 200);
+  cell_margin = random(20, (min_cell_size-2)/2);
+  div_both_x = random(1.0)>= .5;
+  div_both_y = random(1.0)>= .5;
+  line_size = random(5, 30);
 }
 
 void setup_colors()
@@ -80,6 +88,11 @@ void setup_colors()
   b = random(10, 100);
   colorMode(HSB, 360, 100, 100);
   line_color_mode = int(random(8));
+  for (Line l : lines)
+  {
+    l.myColor = lineColor();
+  }
+
 }
 
 color lineColor()
@@ -185,8 +198,8 @@ void setup_lines(float x0, float x1, float y0, float y1)
   {
     //region is square or wider than tall
     pivot = random(x0+cell_margin, x1-cell_margin);
-    la = new Line(new PVector(x0, y0), new PVector(pivot, y1), lineColor());
-    lb = new Line(new PVector(x1, y0), new PVector(pivot, y1), lineColor());
+    la = new Line(new PVector(x0, y0), new PVector(pivot, y1));
+    lb = new Line(new PVector(x1, y0), new PVector(pivot, y1));
 
     float dleft = pivot-x0;
     float dright = x1-pivot;
@@ -223,8 +236,8 @@ void setup_lines(float x0, float x1, float y0, float y1)
   {
     //region is taller than wide
     pivot = random(y0+cell_margin, y1-cell_margin);
-    la = new Line(new PVector(x0, pivot), new PVector(x1, y0), lineColor());
-    lb = new Line(new PVector(x0, pivot), new PVector(x1, y1), lineColor());
+    la = new Line(new PVector(x0, pivot), new PVector(x1, y0));
+    lb = new Line(new PVector(x0, pivot), new PVector(x1, y1));
 
     float dup = pivot-y0;
     float ddown = y1-pivot;
@@ -259,8 +272,20 @@ void setup_lines(float x0, float x1, float y0, float y1)
 
 void keyReleased() {
   if (key == 's' || key == 'S') saveFrame(timestamp()+"_##.png");
-  if (key == 'r' || key == 'R') redoLines();
-  if (key == 'c' || key == 'C') redoColor();
+  if (key == 'p' || key == 'P')
+  {
+    setup_parameters();
+    lines = new ArrayList<Line>();
+    setup_lines(0, width, 0, height);
+    setup_colors();
+  }
+  if (key == 'l' || key == 'L')
+  {
+    lines = new ArrayList<Line>();
+    setup_lines(0, width, 0, height);
+    setup_colors();
+  }
+  if (key == 'c' || key == 'C') setup_colors();
 }
 
 String timestamp() {
