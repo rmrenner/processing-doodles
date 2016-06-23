@@ -2,6 +2,8 @@ Controls:
 
 S: save a screencap
 
-L: toggle the display of lines
+P: randomize parameters (line width etc)
 
-C: toggle the display of filled-in cells
+L: generate a new set of lines with current parameters
+
+C: recolor existing lines with a new color scheme
