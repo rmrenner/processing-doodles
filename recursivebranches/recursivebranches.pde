@@ -1,6 +1,6 @@
 /*
 
- Recursively subdivides a space into little randomly-colored rectangles.
+ Draws diagonal lines across a randomly subdivided space.
 
  Here's what the variables do:
 
@@ -10,10 +10,11 @@
 
  cell_margin: any cell subdivisions will be at least cell_margin pixels away from the wall.
 
- line_size: if we draw the subdividing lines, they will be line_size in width.
+ line_size: the width of our diagonal strokes
 
  div_both_x/div_both_y: when subdividing an area, controls whether both sides of the divided area are recursively subdivided next. If false, only the larger sub-area gets divided up further.
- cell_both_x/cell_both_y: if true, creates a cell whenever the program decides not to subdivide an area. (ie, if (div_both_x == false OR div_both_y == false) OR (cell size <= min cell size)  If false, it only creates a cell when cell size <= min cell size
+
+ overlap: draws a line across every subdivision of space, even if you're going to be subdividing that space further.
 
  Right now my favorite values for the cell settings are:
  min_cell_size = 45;
@@ -27,12 +28,21 @@
  The results of this sketch are often more aesthetically pleasing if the colors selected are fixed in respect to one or two components of an HSB color.
 
  The global h, s, b float values are there to be the reference value from which the randomized colors vary.
+
+ line_color_mode: what kind of color scheme of our lines will use.
+
+ The styles are:
+    anyColor: each line will be a different random color
+    baseColor: each line will share a single randomly-chosen color
+    fixedH/fixedS/fixedB: each line will share one element of a randomly-chosen color while other two components will vary.
+    randomH/randomS/randomB: each line will share two elements of a randomly-chosen color while the remaining component will vary.
  */
 
 float min_cell_size;
 float cell_margin;
 boolean div_both_x;
 boolean div_both_y;
+boolean overlap;
 float line_size;
 
 float h;    //the dominant hue for the scene.
@@ -78,6 +88,7 @@ void setup_parameters()
   cell_margin = random(20, (min_cell_size-2)/2);
   div_both_x = random(1.0)>= .5;
   div_both_y = random(1.0)>= .5;
+  overlap = random(1.0)>= .5;
   line_size = random(5, 30);
 }
 
@@ -210,6 +221,9 @@ void setup_lines(float x0, float x1, float y0, float y1)
       //subdivide dleft because it > the minimum size
       //and we're either subdividing both sides or it's the larger side
       setup_lines(x0,pivot,y0,y1);
+
+      //if overlap is true, draw a line across this space
+      if(overlap) lines.add(la);
     }
     else
     {
@@ -223,6 +237,9 @@ void setup_lines(float x0, float x1, float y0, float y1)
       //subdivide dright. it's the min size
       //and we're either subdividing both sides or it's larger.
       setup_lines(pivot,x1,y0,y1);
+
+      //if overlap is true, draw a line across this space
+      if(overlap) lines.add(lb);
     }
     else
     {
@@ -248,6 +265,9 @@ void setup_lines(float x0, float x1, float y0, float y1)
       //subdivide dup because it > the minimum size
       //and we're either subdividing both sides or it's the larger side
       setup_lines(x0,x1,y0,pivot);
+
+      //if overlap is true, draw a line across the space
+      if(overlap) lines.add(la);
     }
     else
     {
@@ -261,6 +281,9 @@ void setup_lines(float x0, float x1, float y0, float y1)
       //subdivide ddown. it's the min size
       //and we're either subdividing both sides or it's larger.
       setup_lines(x0,x1,pivot,y1);
+
+      //if overlap draw a line across this space
+      if(overlap) lines.add(lb);
     }
     else
     {

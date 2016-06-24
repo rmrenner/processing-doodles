@@ -1,31 +1,31 @@
 /*
 
  Recursively subdivides a space into little randomly-colored rectangles.
- 
+
  Here's what the variables do:
- 
+
  Variables that control subdivisions:
- 
+
  min_cell_size: stop subdividing if the width or height of a cell is <= min_cell_size.
- 
+
  cell_margin: any cell subdivisions will be at least cell_margin pixels away from the wall.
- 
+
  line_size: if we draw the subdividing lines, they will be line_size in width.
- 
+
  div_both_x/div_both_y: when subdividing an area, controls whether both sides of the divided area are recursively subdivided next. If false, only the larger sub-area gets divided up further.
  cell_both_x/cell_both_y: if true, creates a cell whenever the program decides not to subdivide an area. (ie, if (div_both_x == false OR div_both_y == false) OR (cell size <= min cell size)  If false, it only creates a cell when cell size <= min cell size
- 
+
  Right now my favorite values for the cell settings are:
  min_cell_size = 45;
  cell_margin = 20;
  line_size = 10;
- 
+
  Color settings:
- 
+
  This sketch uses HSB (Hue, Saturation, Brightness) color mode.
- 
+
  The results of this sketch are often more aesthetically pleasing if the colors selected are fixed in respect to one or two components of an HSB color.
- 
+
  The global h, s, b float values are there to be the reference value from which the randomized colors vary.
  */
 
@@ -144,7 +144,7 @@ color anyColor()
 }
 
 color baseColor()
-{  
+{
   return color(h, s, b);
 }
 
@@ -180,7 +180,7 @@ void draw()
 {
   background(bg_color);
   if (show_cells)
-  {  
+  {
     draw_cells();
   }
   if (show_lines)
@@ -205,7 +205,7 @@ void draw_cells()
   rectMode(CORNERS);
   noStroke();
   for (Line c : cells)
-  { 
+  {
     fill(c.myColor);
     rect(c.start.x, c.start.y, c.end.x, c.end.y);
   }
@@ -246,7 +246,7 @@ void setup_lines(float x0, float x1, float y0, float y1)
       {
         //subdivide the larger region
         setup_lines(x0, pivot, y0, y1);
-        
+
         //create a cell out of the smaller region
         if(cell_both_x)
         { cells.add(new Line(new PVector(pivot, y0), new PVector(x1, y1), cellColor())); }
@@ -254,7 +254,7 @@ void setup_lines(float x0, float x1, float y0, float y1)
       {
         //subdivide the larger region
         setup_lines(pivot, x1, y0, y1);
-        
+
         //create a cell out of the smaller region
         if(cell_both_x)
         { cells.add(new Line(new PVector(x0, y0), new PVector(pivot, y1), cellColor())); }
@@ -274,10 +274,10 @@ void setup_lines(float x0, float x1, float y0, float y1)
     { //subdivide only the larger region
       if (pivot-y0>=y1-pivot)
       {
-        
+
         //subdivide larger region
         setup_lines(x0, x1, y0, pivot);
-        
+
         //create a cell out of the smaller region
         if(cell_both_y)
         { cells.add(new Line(new PVector(x0, pivot), new PVector(x1, y1), cellColor())); }
